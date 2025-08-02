@@ -16,6 +16,7 @@ package clients
 
 import (
 	"context"
+	"os"
 )
 
 const (
@@ -60,6 +61,17 @@ func (badge BadgeLevel) String() string {
 // CIIBestPracticesClient interface returns the BadgeLevel for a repo URL.
 type CIIBestPracticesClient interface {
 	GetBadgeLevel(ctx context.Context, uri string) (BadgeLevel, error)
+}
+
+// Default CIIBestPracticeClient returns http-based implementationof the interface.
+func DefaultCIIBestPracticeClient() CIIBestPracticesClient {
+	baseURL := os.Getenv("CII_BEST_PRACTICES_URL")
+	if baseURL == "" {
+		baseURL = "http://www.bestpratices.dev"
+	}
+	return &httpClientCIIBestPractices{
+		baseURL: baseURL,
+	}
 }
 
 // DefaultCIIBestPracticesClient returns http-based implementation of the interface.
